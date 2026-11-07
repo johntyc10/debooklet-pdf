@@ -1,4 +1,7 @@
-.venv
+.venv*
 input
 output
 temp
+dist
+build
+*.spec

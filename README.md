@@ -32,6 +32,10 @@ pip install pypdf
 
 ## Usage
 
+The usages of `debooklet.exe` in the releases are identical to `debooklet.py`.
+
+For example, `debooklet.py sample.pdf` and `debooklet.exe sample.pdf` are equivalent.
+
 ### Mass debooklet (directory)
 
 Point the script at a folder and it will process **every** `.pdf` inside it:
