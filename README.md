@@ -93,7 +93,7 @@ Skipped: 0
 ## Notes
 
 - Input page count **must be even**.
-- Each half-page is scaled to fit A4 while preserving aspect ratio and centred on the page.
+- Each half-page is optionally scaled to fit A4 while preserving aspect ratio and centred on the page.
 - The script is safe to run repeatedly; it always starts with a clean `temp` directory and removes it afterwards.
 - Output directory `./output` is created automatically if it does not exist, and its contents are removed if it exists.
 - Designed for convenient **batch / mass debookleting** of many PDFs in one go.
