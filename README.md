@@ -19,7 +19,7 @@ For a booklet with **N** logical pages (N must be even, and the input PDF must c
 | ...        | ...       | ...        |
 | last       | N/2       | N/2 + 1    |
 
-Each input page is split vertically into left/right halves, scaled to fit A4 (preserving aspect ratio, centred), written as temporary single-page PDFs, then merged in numerical order.
+Each input page is split vertically into left/right halves, optionally scaled to fit A4 (preserving aspect ratio, centred), written as temporary single-page PDFs, then merged in numerical order.
 
 ## Requirements
 
@@ -95,5 +95,5 @@ Skipped: 0
 - Input page count **must be even**.
 - Each half-page is scaled to fit A4 while preserving aspect ratio and centred on the page.
 - The script is safe to run repeatedly; it always starts with a clean `temp` directory and removes it afterwards.
-- Output directory `./output` is created automatically if it does not exist.
+- Output directory `./output` is created automatically if it does not exist, and its contents are removed if it exists.
 - Designed for convenient **batch / mass debookleting** of many PDFs in one go.

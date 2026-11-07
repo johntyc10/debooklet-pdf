@@ -141,7 +141,7 @@ def logical_page_numbers(input_index: int, total_logical: int) -> tuple[int, int
     return left, right
 
 
-def debooklet(input_path: Path, output_path: Path, temp_dir: Path = Path("./temp")) -> None:
+def debooklet(input_path: Path, output_path: Path, temp_dir: Path = Path("./temp"), do_scale_to_a4: bool = False) -> None:
     if input_path.suffix != ".pdf":
         raise Exception(f"File {str(input_path)} does not end with .pdf")
 
@@ -172,14 +172,15 @@ def debooklet(input_path: Path, output_path: Path, temp_dir: Path = Path("./temp
             left_half = crop_half(page, "left")
             right_half = crop_half(page, "right")
 
-            left_a4 = scale_to_a4(left_half)
-            right_a4 = scale_to_a4(right_half)
+            if do_scale_to_a4:
+                left_half = scale_to_a4(left_half)
+                right_half = scale_to_a4(right_half)
 
             left_path = temp_dir / make_padded_name(left_num, width)
             right_path = temp_dir / make_padded_name(right_num, width)
 
-            write_single_page_pdf(left_a4, left_path)
-            write_single_page_pdf(right_a4, right_path)
+            write_single_page_pdf(left_half, left_path)
+            write_single_page_pdf(right_half, right_path)
 
             print(f"  input[{i+1}] → {left_path.name}  &  {right_path.name}")
 
@@ -208,6 +209,7 @@ def main() -> None:
         description="Debooklet a scanned PDF (split spreads, reorder to sequential A4 pages)"
     )
     parser.add_argument("input", type=Path, help="Input booklet PDF or path")
+    parser.add_argument("--scale-to-a4", action="store_true", help="Scale each debookleted page to A4")
     parser.add_argument(
         "--temp-dir",
         type=Path,
@@ -223,13 +225,22 @@ def main() -> None:
     input_type = "file" if args.input.is_file() else "directory"
     print(f"Debookleting on {input_type} {args.input}...")
 
-    (ROOT / "output").mkdir(exist_ok=True)
+    output_dir = ROOT / "output"
+
+    if output_dir.exists():
+        _ans = input("[WARNING] output folder exists, all of its contents will be REMOVED! Do you wish to continue? [y/N]: ")
+        if _ans.lower().strip() != "y":
+            print("Aborting...")
+            sys.exit(0)
+        shutil.rmtree(output_dir)
+
+    output_dir.mkdir(exist_ok=True)
 
     try:
         if input_type == "file":
             input_stem = Path(args.input).stem
-            output = ROOT / "output" / f"{input_stem}_debookleted.pdf"
-            debooklet(args.input, output, args.temp_dir)
+            output = output_dir / f"{input_stem}_debookleted.pdf"
+            debooklet(args.input, output, args.temp_dir, args.scale_to_a4)
         else:
             original_pdf_files = [f for f in args.input.glob("*.pdf") if f.is_file()]
             if not original_pdf_files:
@@ -243,10 +254,11 @@ def main() -> None:
                 print(f"Processing [{i+1}/{len(original_pdf_files)}]: {str(file)}")
                 try:
                     input_stem = Path(file).stem
-                    output = ROOT / "output" / f"{input_stem}_debookleted.pdf"
-                    debooklet(file, output, args.temp_dir)
+                    output = output_dir / f"{input_stem}_debookleted.pdf"
+                    debooklet(file, output, args.temp_dir, args.scale_to_a4)
                 except Exception as e:
                     print(f"Error occurred while proccessing {str(file)}. Skipping...")
+                    print(e)
                     skipped += 1
 
             print()
