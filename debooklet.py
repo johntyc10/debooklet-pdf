@@ -28,7 +28,7 @@ A4_WIDTH = 595.2756
 A4_HEIGHT = 841.8898
 
 # project root
-ROOT = Path(__file__).resolve().parent
+ROOT = Path.cwd()
 
 
 def ensure_temp_dir(temp_dir: Path) -> None:
